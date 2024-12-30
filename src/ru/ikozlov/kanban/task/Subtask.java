@@ -1,10 +1,12 @@
-package ru.ikozlov.kanban;
+package ru.ikozlov.kanban.task;
 
 public class Subtask extends Task {
     private Epic epic;
 
     public Epic getEpic() {
-        return epic;
+        Epic epicCopy = new Epic(epic.getTitle(), epic.getDescription(), epic.getSubtasks());
+        epicCopy.setId(epic.getId());
+        return epicCopy;
     }
 
     public void setEpic(Epic epic) {

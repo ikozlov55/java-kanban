@@ -1,4 +1,4 @@
-package ru.ikozlov.kanban;
+package ru.ikozlov.kanban.task;
 
 import java.util.Objects;
 

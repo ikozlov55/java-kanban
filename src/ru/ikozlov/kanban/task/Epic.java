@@ -1,28 +1,29 @@
-package ru.ikozlov.kanban;
+package ru.ikozlov.kanban.task;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 public class Epic extends Task {
-    private Subtask[] subtasks;
+    private List<Subtask> subtasks;
 
     public Epic(String title, String description) {
         super(title, description, Status.NEW);
-        this.subtasks = new Subtask[0];
+        this.subtasks = new ArrayList<>();
     }
 
-    public Epic(String title, String description, Subtask[] subtasks) {
+    public Epic(String title, String description, List<Subtask> subtasks) {
         super(title, description, Status.NEW);
         setSubtasks(subtasks);
         updateStatus();
     }
 
-    public Subtask[] getSubtasks() {
-        return subtasks;
+    public List<Subtask> getSubtasks() {
+        return new ArrayList<>(subtasks);
     }
 
-    public void setSubtasks(Subtask[] subtasks) {
-        this.subtasks = new TreeSet<>(Arrays.stream(subtasks).toList()).toArray(new Subtask[0]);
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks = new TreeSet<>(subtasks).stream().toList();
     }
 
     public void updateStatus() {
@@ -39,9 +40,9 @@ public class Epic extends Task {
             }
         }
         Task.Status newStatus = Task.Status.IN_PROGRESS;
-        if (subtasks.length == 0 || newSubtasks == subtasks.length) {
+        if (subtasks.isEmpty() || newSubtasks == subtasks.size()) {
             newStatus = Task.Status.NEW;
-        } else if (doneSubtasks == subtasks.length) {
+        } else if (doneSubtasks == subtasks.size()) {
             newStatus = Task.Status.DONE;
         }
         setStatus(newStatus);
@@ -49,9 +50,11 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        int[] subtaskIds = Arrays.stream(getSubtasks()).mapToInt(Subtask::getId).toArray();
+        List<Integer> subtaskIds = getSubtasks().stream()
+                .mapToInt(Subtask::getId).boxed()
+                .toList();
         return String.format("Epic #%d\nStatus: %s\nTitle: %s\n%s\nSubtasks: %s\n", getId(),
-                getStatus(), getTitle(), getDescription(), Arrays.toString(subtaskIds));
+                getStatus(), getTitle(), getDescription(), subtaskIds);
     }
 
 
