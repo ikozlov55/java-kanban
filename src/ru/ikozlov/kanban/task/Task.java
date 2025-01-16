@@ -72,6 +72,12 @@ public class Task implements Comparable<Task> {
         return id - o.getId();
     }
 
+    public Task copy() {
+        Task copy = new Task(getTitle(), getDescription(), getStatus());
+        copy.setId(getId());
+        return copy;
+    }
+
     public enum Status {
         NEW,
         IN_PROGRESS,

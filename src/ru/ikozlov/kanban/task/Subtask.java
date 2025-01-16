@@ -3,6 +3,11 @@ package ru.ikozlov.kanban.task;
 public class Subtask extends Task {
     private Epic epic;
 
+    public Subtask(String title, String description, Status status, Epic epic) {
+        super(title, description, status);
+        this.epic = epic;
+    }
+
     public Epic getEpic() {
         Epic epicCopy = new Epic(epic.getTitle(), epic.getDescription(), epic.getSubtasks());
         epicCopy.setId(epic.getId());
@@ -13,10 +18,6 @@ public class Subtask extends Task {
         this.epic = epic;
     }
 
-    public Subtask(String title, String description, Status status, Epic epic) {
-        super(title, description, status);
-        this.epic = epic;
-    }
 
     @Override
     public String toString() {
@@ -24,5 +25,10 @@ public class Subtask extends Task {
                 getId(), epic.getId(), getStatus(), getTitle(), getDescription());
     }
 
-
+    public Subtask copy() {
+        Epic epicCopy = getEpic();
+        Subtask copy = new Subtask(getTitle(), getDescription(), getStatus(), epicCopy);
+        copy.setId(getId());
+        return copy;
+    }
 }

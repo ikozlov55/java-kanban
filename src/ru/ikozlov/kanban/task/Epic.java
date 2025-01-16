@@ -57,5 +57,11 @@ public class Epic extends Task {
                 getStatus(), getTitle(), getDescription(), subtaskIds);
     }
 
+    public Epic copy() {
+        Epic copy = new Epic(getTitle(), getDescription());
+        copy.setId(getId());
+        copy.setSubtasks(getSubtasks());
+        return copy;
+    }
 
 }
