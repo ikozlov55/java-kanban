@@ -7,12 +7,12 @@ import ru.ikozlov.kanban.task.Task;
 import java.util.HashMap;
 import java.util.List;
 
-public class ImMemoryTaskManager implements TaskManager {
+public class InMemoryTaskManager implements TaskManager {
     private int tasksCount = 0;
     private final HashMap<TaskType, HashMap<Integer, Task>> taskStorageByType;
     private final HistoryManager historyManager;
 
-    public ImMemoryTaskManager() {
+    public InMemoryTaskManager() {
         taskStorageByType = new HashMap<>();
         taskStorageByType.put(TaskType.TASK, new HashMap<>());
         taskStorageByType.put(TaskType.SUBTASK, new HashMap<>());
@@ -184,7 +184,7 @@ public class ImMemoryTaskManager implements TaskManager {
         return subtask;
     }
 
-
+    @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }

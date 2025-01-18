@@ -10,7 +10,7 @@ class ManagersTest {
     void getDefaultTaskManager() {
         TaskManager manager = Managers.getDefault();
 
-        assertInstanceOf(ImMemoryTaskManager.class, manager);
+        assertInstanceOf(InMemoryTaskManager.class, manager);
     }
 
     @Test

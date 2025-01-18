@@ -8,11 +8,7 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     public static final int HISTORY_CAPACITY = 10;
-    private final Deque<Task> accessHistory;
-
-    public InMemoryHistoryManager() {
-        accessHistory = new ArrayDeque<>();
-    }
+    private final Deque<Task> accessHistory = new ArrayDeque<>();
 
     @Override
     public List<Task> getHistory() {

@@ -5,7 +5,7 @@ import ru.ikozlov.kanban.task.Task;
 import java.util.List;
 
 public interface HistoryManager {
-    public void add(Task task);
+    void add(Task task);
 
-    public List<Task> getHistory();
+    List<Task> getHistory();
 }

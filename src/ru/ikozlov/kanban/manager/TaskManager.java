@@ -7,49 +7,44 @@ import ru.ikozlov.kanban.task.Task;
 import java.util.List;
 
 public interface TaskManager {
-    public List<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    public void clearTasks();
+    void clearTasks();
 
-    public Task getTask(int id);
+    Task getTask(int id);
 
-    public Task createTask(Task task);
+    Task createTask(Task task);
 
-    public Task updateTask(int id, Task task);
+    Task updateTask(int id, Task task);
 
-    public Task deleteTask(int id);
+    Task deleteTask(int id);
 
-    public List<Epic> getAllEpics();
+    List<Epic> getAllEpics();
 
-    public void clearEpics();
+    void clearEpics();
 
-    public Epic getEpic(int id);
+    Epic getEpic(int id);
 
-    public Epic createEpic(Epic epic);
+    Epic createEpic(Epic epic);
 
-    public Epic updateEpic(int id, Epic epic);
+    Epic updateEpic(int id, Epic epic);
 
-    public Epic deleteEpic(int id);
+    Epic deleteEpic(int id);
 
-    public List<Subtask> getEpicSubtasks(int id);
+    List<Subtask> getEpicSubtasks(int id);
 
-    public List<Subtask> getAllSubtasks();
+    List<Subtask> getAllSubtasks();
 
-    public void clearSubtasks();
+    void clearSubtasks();
 
-    public Subtask getSubtask(int id);
+    Subtask getSubtask(int id);
 
-    public Subtask createSubtask(Subtask subtask);
+    Subtask createSubtask(Subtask subtask);
 
-    public Subtask updateSubtask(int id, Subtask subtask);
+    Subtask updateSubtask(int id, Subtask subtask);
 
-    public Subtask deleteSubtask(int id);
+    Subtask deleteSubtask(int id);
 
-    public List<Task> getHistory();
+    List<Task> getHistory();
 
-    public enum TaskType {
-        TASK,
-        SUBTASK,
-        EPIC
-    }
 }

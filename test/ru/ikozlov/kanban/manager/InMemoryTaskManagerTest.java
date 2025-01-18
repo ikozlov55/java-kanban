@@ -7,12 +7,12 @@ import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;
 
-class ImMemoryTaskManagerTest {
-    ImMemoryTaskManager taskManager;
+class InMemoryTaskManagerTest {
+    InMemoryTaskManager taskManager;
 
     @BeforeEach
     void setup() {
-        taskManager = new ImMemoryTaskManager();
+        taskManager = new InMemoryTaskManager();
     }
 
     @Test

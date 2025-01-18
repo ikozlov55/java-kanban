@@ -2,7 +2,7 @@ package ru.ikozlov.kanban.manager;
 
 public class Managers {
     public static TaskManager getDefault() {
-        return new ImMemoryTaskManager();
+        return new InMemoryTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
