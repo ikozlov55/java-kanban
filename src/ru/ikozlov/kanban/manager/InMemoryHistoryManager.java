@@ -57,12 +57,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         List<Task> records = new ArrayList<>();
-        Node<Task> current = head;
+        Node<Task> current = tail;
         while (current != null) {
             records.add(current.data);
-            current = current.next;
+            current = current.prev;
         }
-        return records.reversed();
+        return records;
     }
 
 }

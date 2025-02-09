@@ -64,7 +64,7 @@ public class Task implements Comparable<Task> {
 
     @Override
     public String toString() {
-        return String.format("Task #%d\nStatus: %s\nTitle: %s\n%s\n", id, status, title, description);
+        return String.format("Task #%d %s %s", id, status, title);
     }
 
     @Override

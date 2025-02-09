@@ -172,6 +172,10 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
         Subtask newSubtask = new Subtask(subtask.getTitle(), subtask.getDescription(), subtask.getStatus(), epic);
         newSubtask.setId(tasksCount);
+        List<Subtask> subtasks = epic.getSubtasks();
+        subtasks.add(newSubtask);
+        epic.setSubtasks(subtasks);
+        epic.updateStatus();
         taskStorageByType.get(TaskType.SUBTASK).put(newSubtask.getId(), newSubtask);
         return newSubtask;
     }
