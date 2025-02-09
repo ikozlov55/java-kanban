@@ -27,6 +27,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasks() {
+        for (int taskId : taskStorageByType.get(TaskType.TASK).keySet()) {
+            historyManager.remove(taskId);
+        }
         taskStorageByType.put(TaskType.TASK, new HashMap<>());
     }
 
@@ -62,7 +65,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task deleteTask(int id) {
-        return taskStorageByType.get(TaskType.TASK).remove(id);
+        Task task = taskStorageByType.get(TaskType.TASK).remove(id);
+        if (task == null) {
+            return null;
+        }
+        historyManager.remove(task.getId());
+        return task;
     }
 
     @Override
@@ -73,6 +81,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpics() {
+        for (int taskId : taskStorageByType.get(TaskType.EPIC).keySet()) {
+            historyManager.remove(taskId);
+        }
         taskStorageByType.put(TaskType.EPIC, new HashMap<>());
         clearSubtasks();
     }
@@ -113,7 +124,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic deleteEpic(int id) {
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).remove(id);
-        epic.getSubtasks().forEach(x -> taskStorageByType.get(TaskType.SUBTASK).remove(x.getId()));
+        if (epic == null) {
+            return null;
+        }
+        historyManager.remove(epic.getId());
+        epic.getSubtasks().forEach(x -> {
+            Task subtask = taskStorageByType.get(TaskType.SUBTASK).remove(x.getId());
+            historyManager.remove(subtask.getId());
+        });
         return epic;
     }
 
@@ -131,6 +149,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearSubtasks() {
+        for (int taskId : taskStorageByType.get(TaskType.SUBTASK).keySet()) {
+            historyManager.remove(taskId);
+        }
         taskStorageByType.put(TaskType.SUBTASK, new HashMap<>());
         getAllEpics().forEach(Epic::updateStatus);
     }
@@ -177,6 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask == null) {
             return null;
         }
+        historyManager.remove(subtask.getId());
         int epicId = subtask.getEpic().getId();
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
         epic.setSubtasks(epic.getSubtasks().stream().filter(x -> x != subtask).toList());
