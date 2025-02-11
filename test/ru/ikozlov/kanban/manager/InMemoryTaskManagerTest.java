@@ -160,7 +160,7 @@ class InMemoryTaskManagerTest {
         List<Subtask> subtasks = taskManager.getEpic(1).getSubtasks();
 
         Assertions.assertEquals(1, subtasks.size());
-        Assertions.assertEquals(subtask1.getId(), subtasks.getFirst().getId());
+        Assertions.assertEquals(subtask1, subtasks.getFirst());
     }
 
     @Test
@@ -206,7 +206,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void epicStatusIsInDoneWhenAllSubtasksAreDone() {
+    void epicStatusIsDoneWhenAllSubtasksAreDone() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
         taskManager.createSubtask(new SubtaskBuilder(2, epic).status(Task.Status.DONE).build());

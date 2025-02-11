@@ -40,16 +40,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else if (node.prev == null) {
             node.next.prev = null;
             head = node.next;
-            node.next = null;
         } else if (node.next == null) {
             node.prev.next = null;
             tail = node.prev;
-            node.prev = null;
         } else {
             node.prev.next = node.next;
             node.next.prev = node.prev;
-            node.next = null;
-            node.prev = null;
         }
         size--;
     }
@@ -66,9 +62,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     static class Node<T> {
-        public T data;
-        public Node<T> next = null;
-        public Node<T> prev = null;
+        T data;
+        Node<T> next = null;
+        Node<T> prev = null;
 
         public Node(T data) {
             this.data = data;
