@@ -53,8 +53,8 @@ public class Epic extends Task {
         List<Integer> subtaskIds = getSubtasks().stream()
                 .mapToInt(Subtask::getId).boxed()
                 .toList();
-        return String.format("Epic #%d\nStatus: %s\nTitle: %s\n%s\nSubtasks: %s\n", getId(),
-                getStatus(), getTitle(), getDescription(), subtaskIds);
+        return String.format("Epic #%d %s %s with Subtasks: %s", getId(),
+                getStatus(), getTitle(), subtaskIds);
     }
 
     public Epic copy() {

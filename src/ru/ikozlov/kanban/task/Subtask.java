@@ -21,8 +21,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Subtask #%d\nEpic: %d\nStatus: %s\nTitle: %s\n%s\n",
-                getId(), epic.getId(), getStatus(), getTitle(), getDescription());
+        return String.format("Subtask #%d of Epic #%d %s %s", getId(), epic.getId(), getStatus(), getTitle());
     }
 
     public Subtask copy() {
