@@ -80,9 +80,42 @@ public class FileBackedTaskManagerTest {
         Epic record = loadedManager.getEpic(1);
         List<Subtask> subtasks = record.getSubtasks();
 
-        Assertions.assertEquals(subtasks.size(), 2);
-        Assertions.assertEquals(subtasks.get(0), subtask1);
-        Assertions.assertEquals(subtasks.get(1), subtask2);
+        Assertions.assertEquals(2, subtasks.size());
+        Assertions.assertEquals(subtask1, subtasks.get(0));
+        Assertions.assertEquals(subtask2, subtasks.get(1));
+    }
+
+    @Test
+    void emptyManagerLoading() {
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        Assertions.assertTrue(loadedManager.getAllTasks().isEmpty());
+        Assertions.assertTrue(loadedManager.getAllEpics().isEmpty());
+        Assertions.assertTrue(loadedManager.getAllSubtasks().isEmpty());
+    }
+
+    @Test
+    void multipleTasksLoading() {
+        taskManager.createTask(new TaskBuilder(1).build());
+        taskManager.createTask(new TaskBuilder(2).build());
+        taskManager.createTask(new TaskBuilder(3).build());
+        Epic epic1 = new EpicBuilder(4).build();
+        Epic epic2 = new EpicBuilder(5).build();
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        Subtask subtask1 = new SubtaskBuilder(6, epic1).build();
+        Subtask subtask2 = new SubtaskBuilder(7, epic1).build();
+        Subtask subtask3 = new SubtaskBuilder(8, epic1).build();
+        Subtask subtask4 = new SubtaskBuilder(9, epic1).build();
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        taskManager.createSubtask(subtask4);
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        Assertions.assertEquals(3, loadedManager.getAllTasks().size());
+        Assertions.assertEquals(2, loadedManager.getAllEpics().size());
+        Assertions.assertEquals(4, loadedManager.getAllSubtasks().size());
     }
 
 }
