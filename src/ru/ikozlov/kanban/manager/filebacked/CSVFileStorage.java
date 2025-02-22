@@ -11,9 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class CSVFileStorage {
+public class CSVFileStorage implements FileStorage {
 
-    public static void save(TaskManager taskManager, File file) {
+    public void save(TaskManager taskManager, File file) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
             writer.write("id,type,name,status,description,epic");
             writer.newLine();
@@ -40,14 +40,14 @@ public class CSVFileStorage {
         }
     }
 
-    public static FileBackedTaskManager load(File file) {
+    public FileBackedTaskManager load(File file) {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(file);
         Set<Task> loadedTasks = new TreeSet<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             reader.readLine();
             while (reader.ready()) {
-                Task task = CSVFileStorage.fromString(reader.readLine());
+                Task task = fromString(reader.readLine());
                 loadedTasks.add(task);
             }
         } catch (IOException e) {
@@ -66,7 +66,7 @@ public class CSVFileStorage {
         return taskManager;
     }
 
-    public static Task fromString(String string) {
+    public Task fromString(String string) {
         String[] data = string.split(",");
         int id = Integer.parseInt(data[0]);
         TaskType type = TaskType.valueOf(data[1]);

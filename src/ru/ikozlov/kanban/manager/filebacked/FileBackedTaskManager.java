@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
+    private static final FileStorage fileStorage = new CSVFileStorage();
 
     public FileBackedTaskManager(File file) {
         if (!file.exists()) {
@@ -53,11 +54,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        CSVFileStorage.save(this, file);
+        fileStorage.save(this, file);
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
-        return CSVFileStorage.load(file);
+        return fileStorage.load(file);
     }
 
     @Override
