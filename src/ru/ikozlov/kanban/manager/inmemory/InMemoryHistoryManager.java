@@ -1,5 +1,6 @@
-package ru.ikozlov.kanban.manager;
+package ru.ikozlov.kanban.manager.inmemory;
 
+import ru.ikozlov.kanban.manager.HistoryManager;
 import ru.ikozlov.kanban.task.Task;
 
 import java.util.ArrayList;

@@ -1,5 +1,9 @@
-package ru.ikozlov.kanban.manager;
+package ru.ikozlov.kanban.manager.inmemory;
 
+import ru.ikozlov.kanban.manager.HistoryManager;
+import ru.ikozlov.kanban.manager.Managers;
+import ru.ikozlov.kanban.manager.TaskManager;
+import ru.ikozlov.kanban.manager.TaskType;
 import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;
@@ -8,9 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int tasksCount = 0;
-    private final HashMap<TaskType, HashMap<Integer, Task>> taskStorageByType;
-    private final HistoryManager historyManager;
+    protected int tasksCount = 0;
+    protected final HashMap<TaskType, HashMap<Integer, Task>> taskStorageByType;
+    protected final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         taskStorageByType = new HashMap<>();
