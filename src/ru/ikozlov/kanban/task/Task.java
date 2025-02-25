@@ -1,5 +1,7 @@
 package ru.ikozlov.kanban.task;
 
+import ru.ikozlov.kanban.manager.TaskType;
+
 import java.util.Objects;
 
 public class Task implements Comparable<Task> {
@@ -64,7 +66,7 @@ public class Task implements Comparable<Task> {
 
     @Override
     public String toString() {
-        return String.format("Task #%d %s %s", id, status, title);
+        return String.format("%d,%s,%s,%s,%s,", getId(), TaskType.TASK, getTitle(), getStatus(), getDescription());
     }
 
     @Override

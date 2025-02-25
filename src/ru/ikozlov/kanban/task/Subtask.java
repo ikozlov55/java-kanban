@@ -1,5 +1,7 @@
 package ru.ikozlov.kanban.task;
 
+import ru.ikozlov.kanban.manager.TaskType;
+
 public class Subtask extends Task {
     private Epic epic;
 
@@ -21,7 +23,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Subtask #%d of Epic #%d %s %s", getId(), epic.getId(), getStatus(), getTitle());
+        return String.format("%d,%s,%s,%s,%s,%d", getId(), TaskType.SUBTASK, getTitle(),
+                getStatus(), getDescription(), getEpic().getId());
     }
 
     public Subtask copy() {

@@ -121,7 +121,6 @@ public class InMemoryTaskManager implements TaskManager {
         oldEpic.setDescription(epic.getDescription());
         oldEpic.setStatus(epic.getStatus());
         oldEpic.setSubtasks(epic.getSubtasks());
-        oldEpic.updateStatus();
         return oldEpic;
     }
 
