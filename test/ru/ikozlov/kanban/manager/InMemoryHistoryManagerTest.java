@@ -3,6 +3,7 @@ package ru.ikozlov.kanban.manager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.ikozlov.kanban.manager.inmemory.InMemoryHistoryManager;
 import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;

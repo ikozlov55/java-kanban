@@ -1,5 +1,7 @@
 package ru.ikozlov.kanban.task;
 
+import ru.ikozlov.kanban.manager.TaskType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -24,6 +26,7 @@ public class Epic extends Task {
 
     public void setSubtasks(List<Subtask> subtasks) {
         this.subtasks = new TreeSet<>(subtasks).stream().toList();
+        updateStatus();
     }
 
     public void updateStatus() {
@@ -50,11 +53,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        List<Integer> subtaskIds = getSubtasks().stream()
-                .mapToInt(Subtask::getId).boxed()
-                .toList();
-        return String.format("Epic #%d %s %s with Subtasks: %s", getId(),
-                getStatus(), getTitle(), subtaskIds);
+        return String.format("%d,%s,%s,%s,%s,", getId(), TaskType.EPIC, getTitle(), getStatus(), getDescription());
     }
 
     public Epic copy() {

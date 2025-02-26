@@ -1,6 +1,8 @@
 package ru.ikozlov.kanban.manager;
 
 import org.junit.jupiter.api.Test;
+import ru.ikozlov.kanban.manager.inmemory.InMemoryHistoryManager;
+import ru.ikozlov.kanban.manager.inmemory.InMemoryTaskManager;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 

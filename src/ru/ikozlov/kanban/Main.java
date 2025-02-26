@@ -1,10 +1,10 @@
 package ru.ikozlov.kanban;
 
-import ru.ikozlov.kanban.manager.InMemoryTaskManager;
 import ru.ikozlov.kanban.manager.TaskManager;
-import ru.ikozlov.kanban.task.Task;
+import ru.ikozlov.kanban.manager.inmemory.InMemoryTaskManager;
 import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
+import ru.ikozlov.kanban.task.Task;
 
 public class Main {
 
