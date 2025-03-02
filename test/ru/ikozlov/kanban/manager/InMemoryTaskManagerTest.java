@@ -164,6 +164,7 @@ class InMemoryTaskManagerTest {
         Assertions.assertEquals(subtask1, subtasks.getFirst());
     }
 
+
     @Test
     void epicStatusIsNewWhenNoSubtasks() {
         Epic epic = new EpicBuilder(1).build();
@@ -239,6 +240,20 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteSubtask(2);
+        Epic record = taskManager.getEpic(1);
+
+        Assertions.assertEquals(Task.Status.NEW, record.getStatus());
+    }
+
+    @Test
+    void epicStatusUpdatesWhenSubtaskCleared() {
+        Epic epic = new EpicBuilder(1).build();
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new SubtaskBuilder(2, epic).status(Task.Status.DONE).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic).status(Task.Status.IN_PROGRESS).build();
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.clearSubtasks();
         Epic record = taskManager.getEpic(1);
 
         Assertions.assertEquals(Task.Status.NEW, record.getStatus());

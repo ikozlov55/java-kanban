@@ -2,19 +2,25 @@ package ru.ikozlov.kanban.task;
 
 import ru.ikozlov.kanban.manager.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task implements Comparable<Task> {
-    private Integer id;
-    private String title;
-    private String description;
-    private Status status;
+    protected Integer id;
+    protected String title;
+    protected String description;
+    protected Status status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(String title, String description, Status status) {
+    public Task(String title, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.id = null;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Integer getId() {
@@ -51,6 +57,26 @@ public class Task implements Comparable<Task> {
         this.status = status;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,7 +92,8 @@ public class Task implements Comparable<Task> {
 
     @Override
     public String toString() {
-        return String.format("%d,%s,%s,%s,%s,", getId(), TaskType.TASK, getTitle(), getStatus(), getDescription());
+        return String.format("%d,%s,%s,%s,%s, ,%s,%s",
+                id, TaskType.TASK, title, status, description, duration, startTime);
     }
 
     @Override
@@ -75,10 +102,11 @@ public class Task implements Comparable<Task> {
     }
 
     public Task copy() {
-        Task copy = new Task(getTitle(), getDescription(), getStatus());
+        Task copy = new Task(title, description, status, duration, startTime);
         copy.setId(getId());
         return copy;
     }
+
 
     public enum Status {
         NEW,

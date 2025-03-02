@@ -8,6 +8,7 @@ import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,7 +50,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         tasksCount++;
-        Task newTask = new Task(task.getTitle(), task.getDescription(), task.getStatus());
+        Task newTask = new Task(task.getTitle(), task.getDescription(), task.getStatus(), task.getDuration(),
+                task.getStartTime());
         newTask.setId(tasksCount);
         taskStorageByType.get(TaskType.TASK).put(newTask.getId(), newTask);
         return newTask;
@@ -106,7 +108,6 @@ public class InMemoryTaskManager implements TaskManager {
         tasksCount++;
         Epic newEpic = new Epic(epic.getTitle(), epic.getDescription(), epic.getSubtasks());
         newEpic.setId(tasksCount);
-        newEpic.updateStatus();
         taskStorageByType.get(TaskType.EPIC).put(newEpic.getId(), newEpic);
         return newEpic;
     }
@@ -119,7 +120,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         oldEpic.setTitle(epic.getTitle());
         oldEpic.setDescription(epic.getDescription());
-        oldEpic.setStatus(epic.getStatus());
         oldEpic.setSubtasks(epic.getSubtasks());
         return oldEpic;
     }
@@ -156,7 +156,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(taskId);
         }
         taskStorageByType.put(TaskType.SUBTASK, new HashMap<>());
-        getAllEpics().forEach(Epic::updateStatus);
+        getAllEpics().forEach(e -> e.setSubtasks(new ArrayList<>()));
     }
 
     @Override
@@ -173,12 +173,12 @@ public class InMemoryTaskManager implements TaskManager {
         tasksCount++;
         int epicId = subtask.getEpic().getId();
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
-        Subtask newSubtask = new Subtask(subtask.getTitle(), subtask.getDescription(), subtask.getStatus(), epic);
+        Subtask newSubtask = new Subtask(subtask.getTitle(), subtask.getDescription(), subtask.getStatus(), epic,
+                subtask.getDuration(), subtask.getStartTime());
         newSubtask.setId(tasksCount);
         List<Subtask> subtasks = epic.getSubtasks();
         subtasks.add(newSubtask);
         epic.setSubtasks(subtasks);
-        epic.updateStatus();
         taskStorageByType.get(TaskType.SUBTASK).put(newSubtask.getId(), newSubtask);
         return newSubtask;
     }
@@ -209,7 +209,6 @@ public class InMemoryTaskManager implements TaskManager {
         int epicId = subtask.getEpic().getId();
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
         epic.setSubtasks(epic.getSubtasks().stream().filter(x -> x != subtask).toList());
-        epic.updateStatus();
         return subtask;
     }
 
