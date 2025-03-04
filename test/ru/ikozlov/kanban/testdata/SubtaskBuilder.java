@@ -6,14 +6,13 @@ import ru.ikozlov.kanban.task.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 public class SubtaskBuilder {
-    private int id;
+    private final int id;
     private String title;
     private String description;
     private Task.Status status;
-    private Epic epic;
+    private final Epic epic;
     private Duration duration;
     private LocalDateTime startTime;
 
@@ -23,9 +22,8 @@ public class SubtaskBuilder {
         this.title = String.format("Subtask %d", id);
         this.description = String.format("Subtask %d description", id);
         this.status = Task.Status.NEW;
-        Random random = new Random();
-        this.duration = Duration.ofMinutes(random.nextInt(30, 180));
-        this.startTime = LocalDateTime.now().plusMinutes(random.nextInt(360));
+        this.duration = Duration.ZERO;
+        this.startTime = LocalDateTime.now().plusHours(id);
     }
 
     public SubtaskBuilder title(String title) {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EpicBuilder {
-    private int id;
+    private final int id;
     private String title;
     private String description;
     private Task.Status status;

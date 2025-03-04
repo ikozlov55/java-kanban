@@ -4,7 +4,6 @@ import ru.ikozlov.kanban.task.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 public class TaskBuilder {
     protected final int id;
@@ -19,9 +18,8 @@ public class TaskBuilder {
         this.title = String.format("Task %d", id);
         this.description = String.format("Task %d description", id);
         this.status = Task.Status.NEW;
-        Random random = new Random();
-        this.duration = Duration.ofMinutes(random.nextInt(30, 180));
-        this.startTime = LocalDateTime.now().plusMinutes(random.nextInt(360));
+        this.duration = Duration.ZERO;
+        this.startTime = LocalDateTime.now().plusHours(id);
     }
 
     public TaskBuilder title(String title) {

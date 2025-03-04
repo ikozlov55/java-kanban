@@ -107,6 +107,22 @@ public class Task implements Comparable<Task> {
         return copy;
     }
 
+    public boolean intersectsWith(Task other) {
+        if (equals(other)) {
+            return false;
+        }
+        if (startTime == null || other.startTime == null) {
+            return false;
+        }
+        return dateBetween(startTime, other.startTime, other.getEndTime()) ||
+                dateBetween(getEndTime(), other.startTime, other.getEndTime()) ||
+                dateBetween(other.startTime, startTime, getEndTime()) ||
+                dateBetween(other.getEndTime(), startTime, getEndTime());
+    }
+
+    private boolean dateBetween(LocalDateTime d, LocalDateTime start, LocalDateTime end) {
+        return d.isEqual(start) || d.isAfter(start) && d.isBefore(end);
+    }
 
     public enum Status {
         NEW,
