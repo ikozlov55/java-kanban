@@ -36,7 +36,6 @@ public class CSVTaskData {
         try {
             startTime = LocalDateTime.parse(data[7]);
         } catch (DateTimeParseException e) {
-            System.out.println(e.getMessage());
             startTime = null;
         }
         this.startTime = startTime;
