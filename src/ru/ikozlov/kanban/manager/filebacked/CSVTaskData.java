@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 public class CSVTaskData {
-    final public int id;
-    final public TaskType type;
-    final public String title;
-    final public Task.Status status;
-    final public String description;
-    final public int epicId;
-    final public Duration duration;
-    final public LocalDateTime startTime;
+    final int id;
+    final TaskType type;
+    final String title;
+    final Task.Status status;
+    final String description;
+    final int epicId;
+    final Duration duration;
+    final LocalDateTime startTime;
 
     public CSVTaskData(String line) {
         String[] data = line.split(",");
