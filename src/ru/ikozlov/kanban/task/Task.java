@@ -108,7 +108,7 @@ public class Task implements Comparable<Task> {
     }
 
     public boolean intersectsWith(Task other) {
-        if (equals(other)) {
+        if (id != null && other.id != null && equals(other)) {
             return false;
         }
         if (startTime == null || other.startTime == null) {
