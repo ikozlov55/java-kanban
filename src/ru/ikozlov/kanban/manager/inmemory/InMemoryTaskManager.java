@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected int tasksCount = 0;
     protected final HashMap<TaskType, HashMap<Integer, Task>> taskStorageByType;
     protected final HistoryManager historyManager;
-    protected final Set<Task> prioritizedTasks;
+    protected final TreeSet<Task> prioritizedTasks;
 
     public InMemoryTaskManager() {
         taskStorageByType = new HashMap<>();
@@ -37,7 +37,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected boolean intersectsWithOtherTasks(Task task) {
+    private boolean intersectsWithOtherTasks(Task task) {
         return getPrioritizedTasks().stream().anyMatch(task::intersectsWith);
     }
 

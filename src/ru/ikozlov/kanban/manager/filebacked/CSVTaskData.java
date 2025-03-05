@@ -8,36 +8,40 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 public class CSVTaskData {
-    final int id;
-    final TaskType type;
-    final String title;
-    final Task.Status status;
-    final String description;
-    final int epicId;
-    final Duration duration;
-    final LocalDateTime startTime;
+    protected final int id;
+    protected final TaskType type;
+    protected final String title;
+    protected final Task.Status status;
+    protected final String description;
+    protected final int epicId;
+    protected final Duration duration;
+    protected final LocalDateTime startTime;
 
     public CSVTaskData(String line) {
         String[] data = line.split(",");
-        int epicId;
-        LocalDateTime startTime;
         this.id = Integer.parseInt(data[0]);
         this.type = TaskType.valueOf(data[1]);
         this.title = data[2];
         this.status = Task.Status.valueOf(data[3]);
         this.description = data[4];
-        try {
-            epicId = Integer.parseInt(data[5]);
-        } catch (NumberFormatException e) {
-            epicId = 0;
-        }
-        this.epicId = epicId;
+        this.epicId = parseEpicId(data[5]);
         this.duration = Duration.parse(data[6]);
+        this.startTime = parseStartTime(data[7]);
+    }
+
+    private int parseEpicId(String str) {
         try {
-            startTime = LocalDateTime.parse(data[7]);
-        } catch (DateTimeParseException e) {
-            startTime = null;
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return 0;
         }
-        this.startTime = startTime;
+    }
+
+    private LocalDateTime parseStartTime(String str) {
+        try {
+            return LocalDateTime.parse(str);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 }

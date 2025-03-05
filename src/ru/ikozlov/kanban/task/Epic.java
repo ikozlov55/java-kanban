@@ -35,14 +35,17 @@ public class Epic extends Task {
 
     @Override
     public void setStatus(Status status) {
+        throw new UnsupportedOperationException("setStatus method should never be called on Epic instance!");
     }
 
     @Override
     public void setDuration(Duration duration) {
+        throw new UnsupportedOperationException("setDuration method should never be called on Epic instance!");
     }
 
     @Override
     public void setStartTime(LocalDateTime startTime) {
+        throw new UnsupportedOperationException("setStartTime method should never be called on Epic instance!");
     }
 
     public LocalDateTime getEndTime() {
