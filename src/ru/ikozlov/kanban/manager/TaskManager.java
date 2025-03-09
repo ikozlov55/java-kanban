@@ -7,6 +7,8 @@ import ru.ikozlov.kanban.task.Task;
 import java.util.List;
 
 public interface TaskManager {
+    List<Task> getPrioritizedTasks();
+
     List<Task> getAllTasks();
 
     void clearTasks();

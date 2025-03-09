@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.ikozlov.kanban.manager.filebacked.FileBackedTaskManager;
+import ru.ikozlov.kanban.manager.filebacked.ManagerSaveException;
 import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;
@@ -15,8 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class FileBackedTaskManagerTest {
-    FileBackedTaskManager taskManager;
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     File file;
 
     @BeforeEach
@@ -213,6 +213,25 @@ public class FileBackedTaskManagerTest {
         Assertions.assertEquals(task3, loadedManager.getTask(3));
         Assertions.assertNull(loadedManager.getTask(4));
         Assertions.assertEquals(task5, loadedManager.getTask(5));
+    }
+
+    @Test
+    void exceptionOnInvalidFileInConstructor() {
+        File file = new File("Z:/folder/file.txt");
+
+        Assertions.assertThrows(ManagerSaveException.class, () -> {
+            FileBackedTaskManager taskManager = new FileBackedTaskManager(file);
+        });
+    }
+
+
+    @Test
+    void exceptionOnInvalidFileLoading() {
+        File file = new File("Z:/folder/file.txt");
+
+        Assertions.assertThrows(ManagerSaveException.class, () -> {
+            FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(file);
+        });
     }
 
 }

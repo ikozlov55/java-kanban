@@ -9,10 +9,12 @@ import ru.ikozlov.kanban.task.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    public static final String HEADER = "id,type,name,status,description,epic";
+    public static final String HEADER = "id,type,name,status,description,epic,duration,startTime";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -29,12 +31,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static void main(String[] args) {
         File file = new File("taskmanager.csv");
         TaskManager manager = new FileBackedTaskManager(file);
-        manager.createTask(new Task("Task1", "Task1", Task.Status.NEW));
-        manager.createTask(new Task("Task2", "Task2", Task.Status.IN_PROGRESS));
+        manager.createTask(new Task("Task1", "Task1", Task.Status.NEW, Duration.ofHours(1),
+                LocalDateTime.now()));
+        manager.createTask(new Task("Task2", "Task2", Task.Status.IN_PROGRESS, Duration.ofHours(2),
+                LocalDateTime.now().minusHours(2)));
         Epic epic1 = manager.createEpic(new Epic("Epic1", "Epic1"));
-        manager.createSubtask(new Subtask("Subtask1", "Subtask1", Task.Status.NEW, epic1));
-        manager.createSubtask(new Subtask("Subtask2", "Subtask2", Task.Status.IN_PROGRESS, epic1));
-        manager.createSubtask(new Subtask("Subtask3", "Subtask3", Task.Status.DONE, epic1));
+        manager.createSubtask(new Subtask("Subtask1", "Subtask1", Task.Status.NEW, epic1,
+                Duration.ofMinutes(30), LocalDateTime.now().plusHours(1)));
+        manager.createSubtask(new Subtask("Subtask2", "Subtask2", Task.Status.IN_PROGRESS, epic1,
+                Duration.ofMinutes(90), LocalDateTime.now().plusHours(2)));
+        manager.createSubtask(new Subtask("Subtask3", "Subtask3", Task.Status.DONE, epic1,
+                Duration.ofMinutes(121), LocalDateTime.now().plusHours(5)));
         manager.createEpic(new Epic("Epic2", "Epic2"));
 
         TaskManager managerLoaded = FileBackedTaskManager.loadFromFile(file);
@@ -82,32 +89,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             reader.readLine();
             while (reader.ready()) {
-                String[] data = reader.readLine().split(",");
-                int id = Integer.parseInt(data[0]);
-                TaskType type = TaskType.valueOf(data[1]);
-                String title = data[2];
-                Task.Status status = Task.Status.valueOf(data[3]);
-                String description = data[4];
-                switch (type) {
+                CSVTaskData data = new CSVTaskData(reader.readLine());
+                switch (data.type) {
                     case TASK -> {
-                        Task task = new Task(title, description, status);
-                        task.setId(id);
-                        taskManager.taskStorageByType.get(TaskType.TASK).put(id, task);
+                        Task task = new Task(data.title, data.description, data.status, data.duration, data.startTime);
+                        task.setId(data.id);
+                        taskManager.taskStorageByType.get(TaskType.TASK).put(data.id, task);
                     }
                     case EPIC -> {
-                        Epic epic = new Epic(title, description);
-                        epic.setId(id);
-                        taskManager.taskStorageByType.get(TaskType.EPIC).put(id, epic);
+                        Epic epic = new Epic(data.title, data.description);
+                        epic.setId(data.id);
+                        taskManager.taskStorageByType.get(TaskType.EPIC).put(data.id, epic);
                     }
                     case SUBTASK -> {
-                        int epicId = Integer.parseInt(data[5]);
-                        Epic epic = (Epic) taskManager.taskStorageByType.get(TaskType.EPIC).get(epicId);
-                        Subtask subtask = new Subtask(title, description, status, epic);
-                        subtask.setId(id);
+                        Epic epic = (Epic) taskManager.taskStorageByType.get(TaskType.EPIC).get(data.epicId);
+                        Subtask subtask = new Subtask(data.title, data.description, data.status, epic, data.duration,
+                                data.startTime);
+                        subtask.setId(data.id);
                         List<Subtask> subtasks = epic.getSubtasks();
                         subtasks.add(subtask);
                         epic.setSubtasks(subtasks);
-                        taskManager.taskStorageByType.get(TaskType.SUBTASK).put(id, subtask);
+                        taskManager.taskStorageByType.get(TaskType.SUBTASK).put(data.id, subtask);
                     }
                 }
             }
