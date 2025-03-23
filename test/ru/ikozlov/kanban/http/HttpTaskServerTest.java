@@ -5,6 +5,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.ikozlov.kanban.http.util.EpicsListTypeToken;
+import ru.ikozlov.kanban.http.util.SubtasksListTypeToken;
+import ru.ikozlov.kanban.http.util.TasksListTypeToken;
 import ru.ikozlov.kanban.manager.TaskManager;
 import ru.ikozlov.kanban.manager.inmemory.InMemoryTaskManager;
 import ru.ikozlov.kanban.task.Epic;
@@ -69,7 +72,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.getTaskById(1);
 
         Assertions.assertEquals(200, response.statusCode());
-
         Task record = gson.fromJson(response.body(), Task.class);
         Assertions.assertEquals(task.getId(), 1);
         Assertions.assertEquals(task.getTitle(), record.getTitle());
@@ -92,7 +94,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.postTask(task);
 
         Assertions.assertEquals(201, response.statusCode());
-
         Task record = taskManager.getTask(1);
         Assertions.assertEquals(task.getTitle(), record.getTitle());
         Assertions.assertEquals(task.getDescription(), record.getDescription());
@@ -124,7 +125,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.postTask(task);
 
         Assertions.assertEquals(201, response.statusCode());
-
         Task record = taskManager.getTask(1);
         Assertions.assertEquals(task.getTitle(), record.getTitle());
         Assertions.assertEquals(task.getDescription(), record.getDescription());
@@ -186,7 +186,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.getEpicById(1);
 
         Assertions.assertEquals(200, response.statusCode());
-
         Epic record = gson.fromJson(response.body(), Epic.class);
         Assertions.assertEquals(epic.getId(), 1);
         Assertions.assertEquals(epic.getTitle(), record.getTitle());
@@ -212,7 +211,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.getEpicById(1);
 
         Assertions.assertEquals(200, response.statusCode());
-
         Epic record = gson.fromJson(response.body(), Epic.class);
         Assertions.assertEquals(3, record.getSubtasks().size());
         for (Subtask subtask : record.getSubtasks()) {
@@ -273,7 +271,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.postEpic(epic);
 
         Assertions.assertEquals(201, response.statusCode());
-
         Epic record = taskManager.getEpic(1);
         Assertions.assertEquals(epic.getTitle(), record.getTitle());
         Assertions.assertEquals(epic.getDescription(), record.getDescription());
@@ -311,7 +308,6 @@ public class HttpTaskServerTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
-
         HttpResponse<String> response = taskClient.getSubtasks();
 
         Assertions.assertEquals(200, response.statusCode());
@@ -325,11 +321,9 @@ public class HttpTaskServerTest {
         Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask);
-
         HttpResponse<String> response = taskClient.getSubtaskById(2);
 
         Assertions.assertEquals(200, response.statusCode());
-
         Subtask record = gson.fromJson(response.body(), Subtask.class);
         Assertions.assertEquals(subtask.getId(), 2);
         Assertions.assertEquals(subtask.getTitle(), record.getTitle());
@@ -352,8 +346,8 @@ public class HttpTaskServerTest {
         Epic epic = new EpicBuilder(1).build();
         Subtask subtask = new SubtaskBuilder(null, epic.getId()).build();
         taskManager.createEpic(epic);
-
         HttpResponse<String> response = taskClient.postSubtask(subtask);
+
         Assertions.assertEquals(201, response.statusCode());
 
         Subtask record = taskManager.getSubtask(2);
@@ -364,7 +358,6 @@ public class HttpTaskServerTest {
         Assertions.assertEquals(subtask.getStatus(), record.getStatus());
         Assertions.assertEquals(subtask.getDuration(), record.getDuration());
         Assertions.assertEquals(subtask.getStartTime(), record.getStartTime());
-
         HttpResponse<String> epicResponse = taskClient.getEpicById(1);
 
         Assertions.assertEquals(200, epicResponse.statusCode());
@@ -386,7 +379,6 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = taskClient.postSubtask(subtask);
 
         Assertions.assertEquals(201, response.statusCode());
-
         Subtask record = taskManager.getSubtask(2);
         Assertions.assertEquals(subtask.getTitle(), record.getTitle());
         Assertions.assertEquals(subtask.getDescription(), record.getDescription());

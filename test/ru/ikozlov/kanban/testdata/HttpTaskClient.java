@@ -12,8 +12,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class HttpTaskClient {
-    private String host;
-    private Gson gson;
+    private final String host;
+    private final Gson gson;
     HttpClient client;
     HttpResponse.BodyHandler<String> bodyHandler;
 

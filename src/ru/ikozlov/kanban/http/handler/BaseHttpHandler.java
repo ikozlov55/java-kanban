@@ -59,13 +59,4 @@ public abstract class BaseHttpHandler implements HttpHandler {
         exchange.sendResponseHeaders(406, 0);
         exchange.close();
     }
-
-}
-
-class InternalError {
-    private final String reason;
-
-    public InternalError(String reason) {
-        this.reason = reason;
-    }
 }
