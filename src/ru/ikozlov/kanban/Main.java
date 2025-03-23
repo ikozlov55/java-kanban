@@ -18,11 +18,11 @@ public class Main {
         manager.createTask(new Task("Task2", "Task2", Task.Status.NEW, Duration.ofHours(1),
                 LocalDateTime.now().minusHours(2)));
         Epic epic1 = manager.createEpic(new Epic("Epic1", "Epic1"));
-        manager.createSubtask(new Subtask("Subtask1", "Subtask1", Task.Status.NEW, epic1,
+        manager.createSubtask(new Subtask("Subtask1", "Subtask1", Task.Status.NEW, epic1.getId(),
                 Duration.ofMinutes(30), LocalDateTime.now().plusHours(1)));
-        manager.createSubtask(new Subtask("Subtask2", "Subtask2", Task.Status.IN_PROGRESS, epic1,
+        manager.createSubtask(new Subtask("Subtask2", "Subtask2", Task.Status.IN_PROGRESS, epic1.getId(),
                 Duration.ofMinutes(90), LocalDateTime.now().plusHours(2)));
-        manager.createSubtask(new Subtask("Subtask3", "Subtask3", Task.Status.DONE, epic1,
+        manager.createSubtask(new Subtask("Subtask3", "Subtask3", Task.Status.DONE, epic1.getId(),
                 Duration.ofMinutes(121), LocalDateTime.now().plusHours(5)));
         manager.createEpic(new Epic("Epic2", "Epic2"));
 

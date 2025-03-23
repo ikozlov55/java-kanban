@@ -45,8 +45,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         taskManager.deleteTask(1);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
-        Assertions.assertNull(loadedManager.getTask(1));
         Assertions.assertEquals(0, loadedManager.getAllTasks().size());
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getTask(1));
     }
 
     @Test
@@ -70,15 +70,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         taskManager.deleteEpic(1);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
-        Assertions.assertNull(loadedManager.getEpic(1));
         Assertions.assertEquals(0, loadedManager.getAllEpics().size());
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getEpic(1));
     }
 
     @Test
     void subtaskSavingAndLoading() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(2, epic).build();
+        Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createSubtask(subtask);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
         Subtask record = loadedManager.getSubtask(2);
@@ -87,19 +87,19 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Assertions.assertEquals(subtask.getTitle(), record.getTitle());
         Assertions.assertEquals(subtask.getDescription(), record.getDescription());
         Assertions.assertEquals(subtask.getStatus(), record.getStatus());
-        Assertions.assertEquals(epic, record.getEpic());
+        Assertions.assertEquals(epic.getId(), record.getEpicId());
     }
 
     @Test
     void subtaskDeletion() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(2, epic).build();
+        Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createSubtask(subtask);
         taskManager.deleteSubtask(2);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
-        Assertions.assertNull(loadedManager.getSubtask(2));
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getSubtask(2));
         Assertions.assertEquals(0, loadedManager.getAllSubtasks().size());
         Assertions.assertNotNull(loadedManager.getEpic(1));
         Assertions.assertEquals(1, loadedManager.getAllEpics().size());
@@ -109,8 +109,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     void epicWithSubtasksSavingAndLoading() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask1 = new SubtaskBuilder(2, epic).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
@@ -126,16 +126,16 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     void epicWithSubtasksDeletion() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask1 = new SubtaskBuilder(2, epic).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteEpic(1);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
-        Assertions.assertNull(loadedManager.getEpic(1));
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getEpic(1));
         Assertions.assertEquals(0, loadedManager.getAllEpics().size());
-        Assertions.assertNull(loadedManager.getSubtask(2));
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getSubtask(2));
         Assertions.assertEquals(0, loadedManager.getAllSubtasks().size());
     }
 
@@ -145,12 +145,12 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         taskManager.createEpic(epic1);
         Epic epic2 = new EpicBuilder(2).build();
         taskManager.createEpic(epic2);
-        taskManager.createSubtask(new SubtaskBuilder(3, epic2).status(Task.Status.IN_PROGRESS).build());
-        taskManager.createSubtask(new SubtaskBuilder(4, epic2).status(Task.Status.IN_PROGRESS).build());
+        taskManager.createSubtask(new SubtaskBuilder(3, epic2.getId()).status(Task.Status.IN_PROGRESS).build());
+        taskManager.createSubtask(new SubtaskBuilder(4, epic2.getId()).status(Task.Status.IN_PROGRESS).build());
         Epic epic3 = new EpicBuilder(5).build();
         taskManager.createEpic(epic3);
-        taskManager.createSubtask(new SubtaskBuilder(6, epic3).status(Task.Status.DONE).build());
-        taskManager.createSubtask(new SubtaskBuilder(7, epic3).status(Task.Status.DONE).build());
+        taskManager.createSubtask(new SubtaskBuilder(6, epic3.getId()).status(Task.Status.DONE).build());
+        taskManager.createSubtask(new SubtaskBuilder(7, epic3.getId()).status(Task.Status.DONE).build());
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
         Assertions.assertEquals(Task.Status.NEW, loadedManager.getEpic(1).getStatus());
@@ -176,10 +176,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Epic epic2 = new EpicBuilder(5).build();
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
-        Subtask subtask1 = new SubtaskBuilder(6, epic1).build();
-        Subtask subtask2 = new SubtaskBuilder(7, epic1).build();
-        Subtask subtask3 = new SubtaskBuilder(8, epic1).build();
-        Subtask subtask4 = new SubtaskBuilder(9, epic1).build();
+        Subtask subtask1 = new SubtaskBuilder(6, epic1.getId()).build();
+        Subtask subtask2 = new SubtaskBuilder(7, epic1.getId()).build();
+        Subtask subtask3 = new SubtaskBuilder(8, epic1.getId()).build();
+        Subtask subtask4 = new SubtaskBuilder(9, epic1.getId()).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
@@ -209,9 +209,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
         Assertions.assertEquals(3, loadedManager.getAllTasks().size());
         Assertions.assertEquals(task1, loadedManager.getTask(1));
-        Assertions.assertNull(loadedManager.getTask(2));
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getTask(2));
         Assertions.assertEquals(task3, loadedManager.getTask(3));
-        Assertions.assertNull(loadedManager.getTask(4));
+        Assertions.assertThrows(NotFoundException.class, () -> loadedManager.getTask(4));
         Assertions.assertEquals(task5, loadedManager.getTask(5));
     }
 

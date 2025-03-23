@@ -1,9 +1,6 @@
 package ru.ikozlov.kanban.manager.inmemory;
 
-import ru.ikozlov.kanban.manager.HistoryManager;
-import ru.ikozlov.kanban.manager.Managers;
-import ru.ikozlov.kanban.manager.TaskManager;
-import ru.ikozlov.kanban.manager.TaskType;
+import ru.ikozlov.kanban.manager.*;
 import ru.ikozlov.kanban.task.Epic;
 import ru.ikozlov.kanban.task.Subtask;
 import ru.ikozlov.kanban.task.Task;
@@ -57,16 +54,17 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = taskStorageByType.get(TaskType.TASK).get(id);
-        if (task != null) {
-            historyManager.add(task);
+        if (task == null) {
+            throw new NotFoundException();
         }
+        historyManager.add(task);
         return task;
     }
 
     @Override
     public Task createTask(Task task) {
         if (intersectsWithOtherTasks(task)) {
-            return null;
+            throw new TimeIntersectionException();
         }
         tasksCount++;
         Task newTask = new Task(task.getTitle(), task.getDescription(), task.getStatus(), task.getDuration(),
@@ -81,10 +79,10 @@ public class InMemoryTaskManager implements TaskManager {
     public Task updateTask(int id, Task task) {
         Task oldTask = taskStorageByType.get(TaskType.TASK).get(id);
         if (oldTask == null) {
-            return null;
+            throw new NotFoundException();
         }
         if (intersectsWithOtherTasks(task)) {
-            return null;
+            throw new TimeIntersectionException();
         }
         oldTask.setTitle(task.getTitle());
         oldTask.setDescription(task.getDescription());
@@ -122,16 +120,17 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpic(int id) {
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (epic == null) {
+            throw new NotFoundException();
         }
+        historyManager.add(epic);
         return epic;
     }
 
     @Override
     public Epic createEpic(Epic epic) {
         tasksCount++;
-        Epic newEpic = new Epic(epic.getTitle(), epic.getDescription(), epic.getSubtasks());
+        Epic newEpic = new Epic(epic.getTitle(), epic.getDescription());
         newEpic.setId(tasksCount);
         taskStorageByType.get(TaskType.EPIC).put(newEpic.getId(), newEpic);
         return newEpic;
@@ -141,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic updateEpic(int id, Epic epic) {
         Epic oldEpic = (Epic) taskStorageByType.get(TaskType.EPIC).get(id);
         if (oldEpic == null) {
-            return null;
+            throw new NotFoundException();
         }
         oldEpic.setTitle(epic.getTitle());
         oldEpic.setDescription(epic.getDescription());
@@ -166,7 +165,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getEpicSubtasks(int id) {
         Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(id);
-        return epic == null ? null : epic.getSubtasks();
+        if (epic == null) {
+            throw new NotFoundException();
+        }
+        return epic.getSubtasks();
     }
 
     @Override
@@ -187,22 +189,25 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = (Subtask) taskStorageByType.get(TaskType.SUBTASK).get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (subtask == null) {
+            throw new NotFoundException();
         }
+        historyManager.add(subtask);
         return subtask;
     }
 
     @Override
     public Subtask createSubtask(Subtask subtask) {
         if (intersectsWithOtherTasks(subtask)) {
-            return null;
+            throw new TimeIntersectionException();
+        }
+        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(subtask.getEpicId());
+        if (epic == null) {
+            throw new NotFoundException();
         }
         tasksCount++;
-        int epicId = subtask.getEpic().getId();
-        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
-        Subtask newSubtask = new Subtask(subtask.getTitle(), subtask.getDescription(), subtask.getStatus(), epic,
-                subtask.getDuration(), subtask.getStartTime());
+        Subtask newSubtask = new Subtask(subtask.getTitle(), subtask.getDescription(), subtask.getStatus(),
+                subtask.getEpicId(), subtask.getDuration(), subtask.getStartTime());
         newSubtask.setId(tasksCount);
         updatePriority(newSubtask);
         List<Subtask> subtasks = epic.getSubtasks();
@@ -216,20 +221,19 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask updateSubtask(int id, Subtask subtask) {
         Subtask oldSubtask = (Subtask) taskStorageByType.get(TaskType.SUBTASK).get(id);
         if (oldSubtask == null) {
-            return null;
+            throw new NotFoundException();
         }
         if (intersectsWithOtherTasks(subtask)) {
-            return null;
+            throw new TimeIntersectionException();
         }
         oldSubtask.setTitle(subtask.getTitle());
         oldSubtask.setDescription(subtask.getDescription());
         oldSubtask.setStatus(subtask.getStatus());
-        oldSubtask.setEpic(subtask.getEpic());
+        oldSubtask.setEpicId(subtask.getEpicId());
         oldSubtask.setDuration(subtask.getDuration());
         oldSubtask.setStartTime(subtask.getStartTime());
         updatePriority(oldSubtask);
-        int epicId = oldSubtask.getEpic().getId();
-        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
+        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(oldSubtask.getEpicId());
         epic.updateStatus();
         return oldSubtask;
     }
@@ -242,8 +246,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         historyManager.remove(subtask.getId());
         prioritizedTasks.remove(subtask);
-        int epicId = subtask.getEpic().getId();
-        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(epicId);
+        Epic epic = (Epic) taskStorageByType.get(TaskType.EPIC).get(subtask.getEpicId());
         epic.setSubtasks(epic.getSubtasks().stream().filter(x -> x != subtask).toList());
         return subtask;
     }

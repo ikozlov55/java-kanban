@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EpicBuilder {
-    private final int id;
+    private final Integer id;
     private String title;
     private String description;
     private Task.Status status;
     private List<Subtask> subtasks;
 
-    public EpicBuilder(int id) {
+    public EpicBuilder(Integer id) {
         this.id = id;
         this.title = String.format("Epic %d", id);
         this.description = String.format("Epic %d description", id);
@@ -44,7 +44,9 @@ public class EpicBuilder {
 
     public Epic build() {
         Epic epic = new Epic(title, description, subtasks);
-        epic.setId(id);
+        if (id != null) {
+            epic.setId(id);
+        }
         return epic;
     }
 

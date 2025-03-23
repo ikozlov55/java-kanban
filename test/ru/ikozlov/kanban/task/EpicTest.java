@@ -34,13 +34,13 @@ class EpicTest {
         Epic epic = new Epic(title, description);
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = startTime.plusHours(3);
-        Subtask subtask1 = new Subtask("Subtask 1", "Subtask 1 description", Task.Status.NEW, epic,
+        Subtask subtask1 = new Subtask("Subtask 1", "Subtask 1 description", Task.Status.NEW, id,
                 Duration.ofHours(1), startTime);
         subtask1.setId(1);
-        Subtask subtask2 = new Subtask("Subtask 2", "Subtask 2 description", Task.Status.NEW, epic,
+        Subtask subtask2 = new Subtask("Subtask 2", "Subtask 2 description", Task.Status.NEW, id,
                 Duration.ofHours(1), startTime.plusHours(1));
         subtask2.setId(2);
-        Subtask subtask3 = new Subtask("Subtask 3", "Subtask 3 description", Task.Status.NEW, epic,
+        Subtask subtask3 = new Subtask("Subtask 3", "Subtask 3 description", Task.Status.NEW, id,
                 Duration.ofHours(1), startTime.plusHours(2));
         subtask3.setId(3);
         List<Subtask> subtasks = List.of(subtask1, subtask2, subtask3);
