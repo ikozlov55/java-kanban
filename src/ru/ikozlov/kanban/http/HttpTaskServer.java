@@ -1,6 +1,5 @@
 package ru.ikozlov.kanban.http;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import ru.ikozlov.kanban.http.handler.*;
 import ru.ikozlov.kanban.manager.Managers;
