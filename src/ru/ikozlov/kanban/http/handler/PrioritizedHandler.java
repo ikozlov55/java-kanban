@@ -8,8 +8,8 @@ import ru.ikozlov.kanban.manager.TaskManager;
 import java.io.IOException;
 
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
-    public PrioritizedHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    public PrioritizedHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override

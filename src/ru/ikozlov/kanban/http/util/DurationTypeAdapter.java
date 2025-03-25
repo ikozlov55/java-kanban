@@ -2,6 +2,7 @@ package ru.ikozlov.kanban.http.util;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -10,17 +11,21 @@ import java.time.Duration;
 public class DurationTypeAdapter extends TypeAdapter<Duration> {
 
     @Override
-    public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
+    public void write(JsonWriter writer, Duration duration) throws IOException {
         if (duration == null) {
-            jsonWriter.nullValue();
+            writer.nullValue();
             return;
         }
-        jsonWriter.value(duration.toString());
+        writer.value(duration.toString());
     }
 
     @Override
-    public Duration read(JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return Duration.parse(value);
+    public Duration read(JsonReader reader) throws IOException {
+        if (reader.peek() != JsonToken.NULL) {
+            String value = reader.nextString();
+            return Duration.parse(value);
+        } else {
+            return null;
+        }
     }
 }

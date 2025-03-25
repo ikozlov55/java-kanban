@@ -1,6 +1,5 @@
 package ru.ikozlov.kanban.http.handler;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.ikozlov.kanban.manager.TaskManager;
@@ -10,8 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
-    public SubtasksHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    public SubtasksHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override
@@ -30,12 +29,9 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                 try (InputStream is = exchange.getRequestBody()) {
                     String body = new String(is.readAllBytes());
                     Subtask subtask = gson.fromJson(body, Subtask.class);
-                    Subtask responseSubtask;
-                    if (subtask.getId() != null) {
-                        responseSubtask = taskManager.updateSubtask(subtask.getId(), subtask);
-                    } else {
-                        responseSubtask = taskManager.createSubtask(subtask);
-                    }
+                    Subtask responseSubtask = subtask.getId() != null
+                            ? taskManager.updateSubtask(subtask.getId(), subtask)
+                            : taskManager.createSubtask(subtask);
                     sendText(exchange, gson.toJson(responseSubtask), 201);
                 }
             }

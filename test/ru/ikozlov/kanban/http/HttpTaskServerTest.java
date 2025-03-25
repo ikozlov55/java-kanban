@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.ikozlov.kanban.http.handler.BaseHttpHandler;
 import ru.ikozlov.kanban.http.util.EpicsListTypeToken;
 import ru.ikozlov.kanban.http.util.SubtasksListTypeToken;
 import ru.ikozlov.kanban.http.util.TasksListTypeToken;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class HttpTaskServerTest {
-    Gson gson = HttpTaskServer.makeGson();
+    Gson gson = BaseHttpHandler.makeGson();
     TaskManager taskManager = new InMemoryTaskManager();
     HttpTaskServer taskServer;
     HttpTaskClient taskClient = new HttpTaskClient("http://localhost:8080", gson);

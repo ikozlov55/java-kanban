@@ -8,8 +8,8 @@ import ru.ikozlov.kanban.manager.TaskManager;
 import java.io.IOException;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
-    public HistoryHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    public HistoryHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override

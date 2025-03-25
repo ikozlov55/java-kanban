@@ -1,6 +1,5 @@
 package ru.ikozlov.kanban.http.handler;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.ikozlov.kanban.manager.TaskManager;
@@ -12,8 +11,8 @@ import java.io.InputStream;
 import java.util.List;
 
 public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
-    public EpicsHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    public EpicsHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override
@@ -37,12 +36,9 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                 try (InputStream is = exchange.getRequestBody()) {
                     String body = new String(is.readAllBytes());
                     Epic epic = gson.fromJson(body, Epic.class);
-                    Epic responseEpic;
-                    if (epic.getId() != null) {
-                        responseEpic = taskManager.updateEpic(epic.getId(), epic);
-                    } else {
-                        responseEpic = taskManager.createEpic(epic);
-                    }
+                    Epic responseEpic = epic.getId() != null
+                            ? taskManager.updateEpic(epic.getId(), epic)
+                            : taskManager.createEpic(epic);
                     sendText(exchange, gson.toJson(responseEpic), 201);
                 }
             }

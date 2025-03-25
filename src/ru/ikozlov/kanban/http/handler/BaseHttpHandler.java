@@ -1,25 +1,32 @@
 package ru.ikozlov.kanban.http.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.ikozlov.kanban.http.util.DurationTypeAdapter;
+import ru.ikozlov.kanban.http.util.EpicAdapter;
+import ru.ikozlov.kanban.http.util.LocalDateTimeAdapter;
 import ru.ikozlov.kanban.manager.NotFoundException;
 import ru.ikozlov.kanban.manager.TaskManager;
 import ru.ikozlov.kanban.manager.TimeIntersectionException;
+import ru.ikozlov.kanban.task.Epic;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public abstract class BaseHttpHandler implements HttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected TaskManager taskManager;
     protected Gson gson;
 
-    public BaseHttpHandler(TaskManager taskManager, Gson gson) {
+    public BaseHttpHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        this.gson = gson;
+        this.gson = makeGson();
     }
 
     @Override
@@ -58,5 +65,14 @@ public abstract class BaseHttpHandler implements HttpHandler {
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(406, 0);
         exchange.close();
+    }
+
+    public static Gson makeGson() {
+        return new GsonBuilder()
+                .serializeNulls()
+                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter().nullSafe())
+                .registerTypeAdapter(Epic.class, new EpicAdapter())
+                .create();
     }
 }

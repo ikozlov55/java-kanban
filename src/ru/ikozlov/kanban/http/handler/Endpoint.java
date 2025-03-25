@@ -28,7 +28,8 @@ public class Endpoint {
             if (method.equals("POST")) {
                 return new Endpoint(Type.POST_TASK, null);
             }
-        } else if (tasksIdMatcher.matches()) {
+        }
+        if (tasksIdMatcher.matches()) {
             int taskId = Integer.parseInt(tasksIdMatcher.group("taskId"));
             if (method.equals("GET")) {
                 return new Endpoint(Type.GET_TASK_ID, taskId);
@@ -36,14 +37,16 @@ public class Endpoint {
             if (method.equals("DELETE")) {
                 return new Endpoint(Type.DELETE_TASK_ID, taskId);
             }
-        } else if (path.equals("/subtasks")) {
+        }
+        if (path.equals("/subtasks")) {
             if (method.equals("GET")) {
                 return new Endpoint(Type.GET_SUBTASKS, null);
             }
             if (method.equals("POST")) {
                 return new Endpoint(Type.POST_SUBTASK, null);
             }
-        } else if (subtasksIdMatcher.matches()) {
+        }
+        if (subtasksIdMatcher.matches()) {
             int taskId = Integer.parseInt(subtasksIdMatcher.group("taskId"));
             if (method.equals("GET")) {
                 return new Endpoint(Type.GET_SUBTASK_ID, taskId);
@@ -51,14 +54,16 @@ public class Endpoint {
             if (method.equals("DELETE")) {
                 return new Endpoint(Type.DELETE_SUBTASK_ID, taskId);
             }
-        } else if (path.equals("/epics")) {
+        }
+        if (path.equals("/epics")) {
             if (method.equals("GET")) {
                 return new Endpoint(Type.GET_EPICS, null);
             }
             if (method.equals("POST")) {
                 return new Endpoint(Type.POST_EPIC, null);
             }
-        } else if (epicsIdMatcher.matches()) {
+        }
+        if (epicsIdMatcher.matches()) {
             int taskId = Integer.parseInt(epicsIdMatcher.group("taskId"));
             if (method.equals("GET")) {
                 return new Endpoint(Type.GET_EPIC_ID, taskId);
@@ -66,12 +71,15 @@ public class Endpoint {
             if (method.equals("DELETE")) {
                 return new Endpoint(Type.DELETE_EPIC_ID, taskId);
             }
-        } else if (epicIdSubtasksMatcher.matches() && method.equals("GET")) {
+        }
+        if (epicIdSubtasksMatcher.matches() && method.equals("GET")) {
             int taskId = Integer.parseInt(epicIdSubtasksMatcher.group("taskId"));
             return new Endpoint(Type.GET_EPIC_ID_SUBTASKS, taskId);
-        } else if (path.equals("/history")) {
+        }
+        if (path.equals("/history")) {
             return new Endpoint(Type.GET_HISTORY, null);
-        } else if (path.equals("/prioritized")) {
+        }
+        if (path.equals("/prioritized")) {
             return new Endpoint(Type.GET_PRIORITIZED, null);
         }
         return new Endpoint(Type.UNKNOWN, null);
