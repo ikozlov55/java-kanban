@@ -6,20 +6,20 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class TaskBuilder {
-    protected final int id;
+    protected final Integer id;
     protected String title;
     protected String description;
     protected Task.Status status;
     protected Duration duration;
     protected LocalDateTime startTime;
 
-    public TaskBuilder(int id) {
+    public TaskBuilder(Integer id) {
         this.id = id;
         this.title = String.format("Task %d", id);
         this.description = String.format("Task %d description", id);
         this.status = Task.Status.NEW;
         this.duration = Duration.ZERO;
-        this.startTime = LocalDateTime.now().plusHours(id);
+        this.startTime = LocalDateTime.now().plusHours(id != null ? id : 0);
     }
 
     public TaskBuilder title(String title) {
@@ -49,7 +49,9 @@ public class TaskBuilder {
 
     public Task build() {
         Task task = new Task(title, description, status, duration, startTime);
-        task.setId(id);
+        if (id != null) {
+            task.setId(id);
+        }
         return task;
     }
 

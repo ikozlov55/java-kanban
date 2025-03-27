@@ -17,14 +17,14 @@ class SubtaskTest {
         Task.Status status = Task.Status.NEW;
         Duration duration = Duration.ofMinutes(30);
         LocalDateTime startTime = LocalDateTime.now();
-        Subtask subtask = new Subtask(title, description, status, epic, duration, startTime);
+        Subtask subtask = new Subtask(title, description, status, epic.getId(), duration, startTime);
         subtask.setId(id);
 
         Assertions.assertEquals(id, subtask.getId());
         Assertions.assertEquals(title, subtask.getTitle());
         Assertions.assertEquals(description, subtask.getDescription());
         Assertions.assertEquals(status, subtask.getStatus());
-        Assertions.assertEquals(epic, subtask.getEpic());
+        Assertions.assertEquals(epic.getId(), subtask.getEpicId());
         Assertions.assertEquals(startTime, subtask.getStartTime());
         Assertions.assertEquals(startTime.plus(duration), subtask.getEndTime());
     }
@@ -34,13 +34,13 @@ class SubtaskTest {
     void subtaskEquality() {
         Epic epic = new Epic("Epic 1", "Epic 1 description");
         epic.setId(999);
-        Subtask subtask1 = new Subtask("Epic 1", "Epic 1 description", Task.Status.NEW, epic,
+        Subtask subtask1 = new Subtask("Epic 1", "Epic 1 description", Task.Status.NEW, epic.getId(),
                 Duration.ZERO, LocalDateTime.now());
         subtask1.setId(1);
-        Subtask subtask2 = new Subtask("Epic 2", "Epic 2 description", Task.Status.NEW, epic,
+        Subtask subtask2 = new Subtask("Epic 2", "Epic 2 description", Task.Status.NEW, epic.getId(),
                 Duration.ZERO, LocalDateTime.now());
         subtask2.setId(1);
-        Subtask subtask3 = new Subtask("Epic 1", "Epic 1 description", Task.Status.NEW, epic,
+        Subtask subtask3 = new Subtask("Epic 1", "Epic 1 description", Task.Status.NEW, epic.getId(),
                 Duration.ZERO, LocalDateTime.now());
         subtask3.setId(3);
 

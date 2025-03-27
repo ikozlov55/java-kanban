@@ -26,7 +26,7 @@ class InMemoryHistoryManagerTest {
     void recordsAddition() {
         Task task = new TaskBuilder(1).build();
         Epic epic = new EpicBuilder(2).build();
-        Subtask subtask = new SubtaskBuilder(3, epic).build();
+        Subtask subtask = new SubtaskBuilder(3, epic.getId()).build();
         historyManager.add(task);
         historyManager.add(subtask);
         historyManager.add(epic);

@@ -8,22 +8,22 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SubtaskBuilder {
-    private final int id;
+    private final Integer id;
     private String title;
     private String description;
     private Task.Status status;
-    private final Epic epic;
+    private Integer epicId;
     private Duration duration;
     private LocalDateTime startTime;
 
-    public SubtaskBuilder(int id, Epic epic) {
+    public SubtaskBuilder(Integer id, Integer epicId) {
         this.id = id;
-        this.epic = epic;
+        this.epicId = epicId;
         this.title = String.format("Subtask %d", id);
         this.description = String.format("Subtask %d description", id);
         this.status = Task.Status.NEW;
         this.duration = Duration.ZERO;
-        this.startTime = LocalDateTime.now().plusHours(id);
+        this.startTime = LocalDateTime.now().plusHours(id != null ? id : 0);
     }
 
     public SubtaskBuilder title(String title) {
@@ -52,8 +52,10 @@ public class SubtaskBuilder {
     }
 
     public Subtask build() {
-        Subtask subtask = new Subtask(title, description, status, epic, duration, startTime);
-        subtask.setId(id);
+        Subtask subtask = new Subtask(title, description, status, epicId, duration, startTime);
+        if (id != null) {
+            subtask.setId(id);
+        }
         return subtask;
     }
 

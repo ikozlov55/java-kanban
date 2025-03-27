@@ -39,7 +39,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(task.getTitle(), record.getTitle());
         Assertions.assertEquals(task.getDescription(), record.getDescription());
         Assertions.assertEquals(task.getStatus(), record.getStatus());
-        Assertions.assertNull(taskManager.getTask(task.getId()));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getTask(task.getId()));
     }
 
     @Test
@@ -48,7 +48,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createTask(task);
         taskManager.deleteTask(1);
 
-        Assertions.assertNull(taskManager.getTask(1));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getTask(1));
     }
 
     @Test
@@ -75,7 +75,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(epic.getDescription(), record.getDescription());
         Assertions.assertEquals(epic.getStatus(), record.getStatus());
         Assertions.assertTrue(epic.getSubtasks().isEmpty());
-        Assertions.assertNull(taskManager.getEpic(99));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getEpic(99));
     }
 
     @Test
@@ -84,29 +84,29 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
         taskManager.deleteEpic(1);
 
-        Assertions.assertNull(taskManager.getEpic(1));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getEpic(1));
     }
 
     @Test
     void epicSubtasksRemovedWithEpic() {
         Epic epic = new EpicBuilder(1).build();
-        Subtask subtask1 = new SubtaskBuilder(2, epic).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteEpic(1);
 
-        Assertions.assertNull(taskManager.getEpic(1));
-        Assertions.assertNull(taskManager.getSubtask(2));
-        Assertions.assertNull(taskManager.getSubtask(3));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getEpic(1));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getSubtask(2));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getSubtask(3));
     }
 
     @Test
     void subtaskCreation() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(2, epic).build();
+        Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createSubtask(subtask);
         Subtask record = taskManager.getSubtask(2);
 
@@ -114,14 +114,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(subtask.getTitle(), record.getTitle());
         Assertions.assertEquals(subtask.getDescription(), record.getDescription());
         Assertions.assertEquals(subtask.getStatus(), record.getStatus());
-        Assertions.assertEquals(epic, record.getEpic());
+        Assertions.assertEquals(epic.getId(), record.getEpicId());
     }
 
     @Test
     void noIdConflictOnSubtaskCreation() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(99, epic).build();
+        Subtask subtask = new SubtaskBuilder(99, epic.getId()).build();
         taskManager.createSubtask(subtask);
         Subtask record = taskManager.getSubtask(2);
 
@@ -129,19 +129,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(subtask.getTitle(), record.getTitle());
         Assertions.assertEquals(subtask.getDescription(), record.getDescription());
         Assertions.assertEquals(subtask.getStatus(), record.getStatus());
-        Assertions.assertEquals(epic, record.getEpic());
-        Assertions.assertNull(taskManager.getSubtask(99));
+        Assertions.assertEquals(epic.getId(), record.getEpicId());
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getSubtask(99));
     }
 
     @Test
     void subtaskRemoval() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(2, epic).build();
+        Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createSubtask(subtask);
         taskManager.deleteSubtask(2);
 
-        Assertions.assertNull(taskManager.getSubtask(2));
+        Assertions.assertThrows(NotFoundException.class, () -> taskManager.getSubtask(2));
         Assertions.assertTrue(taskManager.getEpicSubtasks(1).isEmpty());
     }
 
@@ -149,8 +149,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicSubtasksUpdatesOnSubtaskRemoval() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask1 = new SubtaskBuilder(2, epic).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteSubtask(3);
@@ -174,8 +174,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusIsNewWhenAllSubtasksAreNew() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        taskManager.createSubtask(new SubtaskBuilder(2, epic).build());
-        taskManager.createSubtask(new SubtaskBuilder(3, epic).build());
+        taskManager.createSubtask(new SubtaskBuilder(2, epic.getId()).build());
+        taskManager.createSubtask(new SubtaskBuilder(3, epic.getId()).build());
         Epic record = taskManager.getEpic(1);
 
         Assertions.assertEquals(Task.Status.NEW, record.getStatus());
@@ -185,8 +185,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusIsInProgressWhenSubtasksAreInProgress() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        taskManager.createSubtask(new SubtaskBuilder(2, epic).build());
-        taskManager.createSubtask(new SubtaskBuilder(3, epic).status(Task.Status.IN_PROGRESS).build());
+        taskManager.createSubtask(new SubtaskBuilder(2, epic.getId()).build());
+        taskManager.createSubtask(new SubtaskBuilder(3, epic.getId()).status(Task.Status.IN_PROGRESS).build());
         Epic record = taskManager.getEpic(1);
 
         Assertions.assertEquals(Task.Status.IN_PROGRESS, record.getStatus());
@@ -196,8 +196,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusIsInProgressWhenSomeSubtasksAreDone() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        taskManager.createSubtask(new SubtaskBuilder(2, epic).status(Task.Status.IN_PROGRESS).build());
-        taskManager.createSubtask(new SubtaskBuilder(3, epic).status(Task.Status.DONE).build());
+        taskManager.createSubtask(new SubtaskBuilder(2, epic.getId()).status(Task.Status.IN_PROGRESS).build());
+        taskManager.createSubtask(new SubtaskBuilder(3, epic.getId()).status(Task.Status.DONE).build());
         Epic record = taskManager.getEpic(1);
 
         Assertions.assertEquals(Task.Status.IN_PROGRESS, record.getStatus());
@@ -207,8 +207,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusIsDoneWhenAllSubtasksAreDone() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        taskManager.createSubtask(new SubtaskBuilder(2, epic).status(Task.Status.DONE).build());
-        taskManager.createSubtask(new SubtaskBuilder(3, epic).status(Task.Status.DONE).build());
+        taskManager.createSubtask(new SubtaskBuilder(2, epic.getId()).status(Task.Status.DONE).build());
+        taskManager.createSubtask(new SubtaskBuilder(3, epic.getId()).status(Task.Status.DONE).build());
         Epic record = taskManager.getEpic(1);
 
         Assertions.assertEquals(Task.Status.DONE, record.getStatus());
@@ -218,7 +218,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusUpdatesWhenSubtasksUpdates() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask = new SubtaskBuilder(2, epic).build();
+        Subtask subtask = new SubtaskBuilder(2, epic.getId()).build();
         taskManager.createSubtask(subtask);
         subtask.setStatus(Task.Status.IN_PROGRESS);
         taskManager.updateSubtask(2, subtask);
@@ -231,8 +231,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusUpdatesWhenSubtaskRemoved() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask1 = new SubtaskBuilder(2, epic).status(Task.Status.DONE).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).status(Task.Status.DONE).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteSubtask(2);
@@ -245,8 +245,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void epicStatusUpdatesWhenSubtaskCleared() {
         Epic epic = new EpicBuilder(1).build();
         taskManager.createEpic(epic);
-        Subtask subtask1 = new SubtaskBuilder(2, epic).status(Task.Status.DONE).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).status(Task.Status.IN_PROGRESS).build();
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).status(Task.Status.DONE).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).status(Task.Status.IN_PROGRESS).build();
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.clearSubtasks();
@@ -259,7 +259,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void taskManagerAccessHistoryOnAdditions() {
         Task task = new TaskBuilder(1).build();
         Epic epic = new EpicBuilder(2).build();
-        Subtask subtask = new SubtaskBuilder(3, epic).build();
+        Subtask subtask = new SubtaskBuilder(3, epic.getId()).build();
         taskManager.createTask(task);
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask);
@@ -285,8 +285,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task3 = new TaskBuilder(3).startTime(now.minusHours(1)).build();
         Task task4 = new TaskBuilder(4).startTime(now.plusHours(3)).build();
         Epic epic = new EpicBuilder(5).build();
-        Subtask subtask1 = new SubtaskBuilder(6, epic).startTime(now.minusHours(2)).build();
-        Subtask subtask2 = new SubtaskBuilder(7, epic).startTime(now.plusHours(5)).build();
+        Subtask subtask1 = new SubtaskBuilder(6, epic.getId()).startTime(now.minusHours(2)).build();
+        Subtask subtask2 = new SubtaskBuilder(7, epic.getId()).startTime(now.plusHours(5)).build();
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
@@ -308,8 +308,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task3 = new TaskBuilder(3).startTime(now.plusHours(2)).build();
         Task task4 = new TaskBuilder(4).startTime(now.plusHours(3)).build();
         Epic epic = new EpicBuilder(5).build();
-        Subtask subtask1 = new SubtaskBuilder(6, epic).startTime(now.plusHours(4)).build();
-        Subtask subtask2 = new SubtaskBuilder(7, epic).startTime(now.plusHours(5)).build();
+        Subtask subtask1 = new SubtaskBuilder(6, epic.getId()).startTime(now.plusHours(4)).build();
+        Subtask subtask2 = new SubtaskBuilder(7, epic.getId()).startTime(now.plusHours(5)).build();
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
@@ -340,8 +340,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task3 = new TaskBuilder(3).startTime(now.plusHours(2)).build();
         Task task4 = new TaskBuilder(4).startTime(now.plusHours(3)).build();
         Epic epic = new EpicBuilder(5).build();
-        Subtask subtask1 = new SubtaskBuilder(6, epic).startTime(now.plusHours(4)).build();
-        Subtask subtask2 = new SubtaskBuilder(7, epic).startTime(now.plusHours(5)).build();
+        Subtask subtask1 = new SubtaskBuilder(6, epic.getId()).startTime(now.plusHours(4)).build();
+        Subtask subtask2 = new SubtaskBuilder(7, epic.getId()).startTime(now.plusHours(5)).build();
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
@@ -365,10 +365,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new TaskBuilder(1).startTime(now).duration(Duration.ofHours(1)).build();
         Task task2 = new TaskBuilder(2).startTime(now.plusMinutes(30)).duration(Duration.ofMinutes(10)).build();
         taskManager.createTask(task1);
-        taskManager.createTask(task2);
 
-        Assertions.assertEquals(task1, taskManager.getTask(1));
-        Assertions.assertNull(taskManager.getTask(2));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createTask(task2));
     }
 
     @Test
@@ -377,10 +375,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new TaskBuilder(1).startTime(now).duration(Duration.ofHours(1)).build();
         Task task2 = new TaskBuilder(2).startTime(now.plusMinutes(30)).duration(Duration.ofHours(2)).build();
         taskManager.createTask(task1);
-        taskManager.createTask(task2);
 
-        Assertions.assertEquals(task1, taskManager.getTask(1));
-        Assertions.assertNull(taskManager.getTask(2));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createTask(task2));
     }
 
     @Test
@@ -389,10 +385,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new TaskBuilder(1).startTime(now).duration(Duration.ofHours(1)).build();
         Task task2 = new TaskBuilder(2).startTime(now.minusHours(1)).duration(Duration.ofMinutes(90)).build();
         taskManager.createTask(task1);
-        taskManager.createTask(task2);
 
-        Assertions.assertEquals(task1, taskManager.getTask(1));
-        Assertions.assertNull(taskManager.getTask(2));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createTask(task2));
     }
 
     @Test
@@ -401,25 +395,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new TaskBuilder(1).startTime(now).duration(Duration.ofHours(1)).build();
         Task task2 = new TaskBuilder(2).startTime(now).duration(Duration.ofHours(1)).build();
         taskManager.createTask(task1);
-        taskManager.createTask(task2);
 
-        Assertions.assertEquals(task1, taskManager.getTask(1));
-        Assertions.assertNull(taskManager.getTask(2));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createTask(task2));
     }
 
     @Test
     void subtaskNotCreatedIfIntersectsWithOtherSubtask() {
         LocalDateTime now = LocalDateTime.now();
         Epic epic = new EpicBuilder(1).build();
-        Subtask subtask1 = new SubtaskBuilder(2, epic).startTime(now).duration(Duration.ofHours(1)).build();
-        Subtask subtask2 = new SubtaskBuilder(3, epic).startTime(now.minusMinutes(30))
+        Subtask subtask1 = new SubtaskBuilder(2, epic.getId()).startTime(now).duration(Duration.ofHours(1)).build();
+        Subtask subtask2 = new SubtaskBuilder(3, epic.getId()).startTime(now.minusMinutes(30))
                 .duration(Duration.ofHours(1)).build();
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
 
-        Assertions.assertEquals(subtask1, taskManager.getSubtask(2));
-        Assertions.assertNull(taskManager.getSubtask(3));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createSubtask(subtask2));
     }
 
     @Test
@@ -427,13 +417,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime now = LocalDateTime.now();
         Task task1 = new TaskBuilder(1).startTime(now).duration(Duration.ofHours(1)).build();
         Epic epic = new EpicBuilder(2).build();
-        Subtask subtask1 = new SubtaskBuilder(3, epic)
+        Subtask subtask1 = new SubtaskBuilder(3, epic.getId())
                 .startTime(now.plusMinutes(30)).duration(Duration.ofHours(1)).build();
         taskManager.createTask(task1);
         taskManager.createEpic(epic);
-        taskManager.createSubtask(subtask1);
 
-        Assertions.assertEquals(task1, taskManager.getTask(1));
-        Assertions.assertNull(taskManager.getSubtask(3));
+        Assertions.assertThrows(TimeIntersectionException.class, () -> taskManager.createSubtask(subtask1));
     }
 }
