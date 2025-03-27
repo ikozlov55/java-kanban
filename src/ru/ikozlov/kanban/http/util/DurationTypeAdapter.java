@@ -21,11 +21,9 @@ public class DurationTypeAdapter extends TypeAdapter<Duration> {
 
     @Override
     public Duration read(JsonReader reader) throws IOException {
-        if (reader.peek() != JsonToken.NULL) {
-            String value = reader.nextString();
-            return Duration.parse(value);
-        } else {
+        if (reader.peek() == JsonToken.NULL) {
             return null;
         }
+        return Duration.parse(reader.nextString());
     }
 }
